@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, type Transition } from "framer-motion";
 import galleryTall from "@/assets/gallery-tall.jpg";
 import galleryForest from "@/assets/gallery-forest.jpg";
 import galleryTemple from "@/assets/gallery-temple.jpg";
@@ -13,7 +13,8 @@ const images = [
   { src: galleryCafe, alt: "카페", className: "col-span-1 row-span-1" },
 ];
 
-const transition = { duration: 0.8, ease: [0.16, 1, 0.3, 1] };
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const transition: Transition = { duration: 0.8, ease };
 
 const GallerySection = () => {
   return (
@@ -40,10 +41,7 @@ const GallerySection = () => {
           className="grid grid-cols-2 md:grid-cols-4 grid-rows-2 h-[400px] md:h-[700px] gap-3 md:gap-4"
         >
           {images.map((img, i) => (
-            <div
-              key={i}
-              className={`${img.className} overflow-hidden group`}
-            >
+            <div key={i} className={`${img.className} overflow-hidden group`}>
               <img
                 src={img.src}
                 alt={img.alt}

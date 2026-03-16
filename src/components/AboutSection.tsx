@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, type Transition } from "framer-motion";
 import aboutPortrait from "@/assets/about-portrait.jpg";
 
 const START_DATE = new Date("2021-05-20");
@@ -12,14 +12,14 @@ const stats = [
   { value: "♡", label: "사랑" },
 ];
 
-const transition = { duration: 0.8, ease: [0.16, 1, 0.3, 1] };
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const transition: Transition = { duration: 0.8, ease };
 
 const AboutSection = () => {
   return (
     <section id="about" className="bg-background py-20 md:py-28">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-start">
-          {/* Left: Text + Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -45,7 +45,6 @@ const AboutSection = () => {
             </div>
           </motion.div>
 
-          {/* Right: Portrait */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -54,11 +53,7 @@ const AboutSection = () => {
             className="flex justify-center md:justify-end"
           >
             <div className="p-3 bg-surface shadow-sm max-w-sm">
-              <img
-                src={aboutPortrait}
-                alt="H & J"
-                className="w-full h-auto object-cover"
-              />
+              <img src={aboutPortrait} alt="H & J" className="w-full h-auto object-cover" />
             </div>
           </motion.div>
         </div>

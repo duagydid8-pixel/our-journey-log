@@ -1,11 +1,13 @@
-import { motion } from "framer-motion";
+import { motion, type Transition } from "framer-motion";
+
+const transition: Transition = { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] };
 
 const Navbar = () => {
   return (
     <motion.nav
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      transition={transition}
       className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border"
     >
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, type Transition } from "framer-motion";
 
 const START_DATE = new Date("2021-05-20");
 const NEXT_TRIP = new Date("2026-12-24");
@@ -13,7 +13,8 @@ const getDaysUntil = () => {
   return Math.floor((NEXT_TRIP.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 };
 
-const transition = { duration: 0.8, ease: [0.16, 1, 0.3, 1] };
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const transition: Transition = { duration: 0.8, ease };
 
 const HeroSection = () => {
   const daysTogether = getDaysTogether();
@@ -36,27 +37,17 @@ const HeroSection = () => {
             strokeWidth="1.5"
             strokeDasharray="4 4"
           />
-          {/* 태안 */}
           <circle cx="80" cy="150" r="4" fill="hsl(20 40% 50%)" />
           <circle cx="80" cy="150" r="8" fill="none" stroke="white" strokeWidth="4" />
-          <text x="80" y="175" textAnchor="middle" className="text-[11px] fill-taupe" style={{ fontSize: 11 }}>
-            태안
-          </text>
-          {/* 평택 */}
+          <text x="80" y="175" textAnchor="middle" style={{ fontSize: 11, fill: "#8c857e" }}>태안</text>
           <circle cx="300" cy="100" r="4" fill="hsl(20 40% 50%)" />
           <circle cx="300" cy="100" r="8" fill="none" stroke="white" strokeWidth="4" />
-          <text x="300" y="125" textAnchor="middle" className="text-[11px] fill-taupe" style={{ fontSize: 11 }}>
-            평택
-          </text>
-          {/* 후쿠오카 */}
+          <text x="300" y="125" textAnchor="middle" style={{ fontSize: 11, fill: "#8c857e" }}>평택</text>
           <circle cx="520" cy="60" r="4" fill="hsl(20 40% 50%)" />
           <circle cx="520" cy="60" r="8" fill="none" stroke="white" strokeWidth="4" />
-          <text x="520" y="85" textAnchor="middle" className="text-[11px] fill-taupe" style={{ fontSize: 11 }}>
-            후쿠오카
-          </text>
+          <text x="520" y="85" textAnchor="middle" style={{ fontSize: 11, fill: "#8c857e" }}>후쿠오카</text>
         </svg>
 
-        {/* Heading */}
         <div className="relative z-10 text-center mb-16">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -76,7 +67,6 @@ const HeroSection = () => {
           </motion.p>
         </div>
 
-        {/* D-Day Cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

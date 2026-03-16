@@ -1,42 +1,28 @@
-import { motion } from "framer-motion";
+import { motion, type Transition, type Variants } from "framer-motion";
 import tripTaean from "@/assets/trip-taean.jpg";
 import tripPyeongtaek from "@/assets/trip-pyeongtaek.jpg";
 import tripFukuoka from "@/assets/trip-fukuoka.jpg";
 import tripJeju from "@/assets/trip-jeju.jpg";
 
 const trips = [
-  {
-    number: "01",
-    title: "태안 바다 여행",
-    date: "2022.07.15 — 2022.07.18",
-    tags: ["바다", "캠핑", "일몰"],
-    image: tripTaean,
-  },
-  {
-    number: "02",
-    title: "평택 주말 나들이",
-    date: "2023.03.10 — 2023.03.12",
-    tags: ["카페", "산책"],
-    image: tripPyeongtaek,
-  },
-  {
-    number: "03",
-    title: "제주도 봄 여행",
-    date: "2023.09.01 — 2023.09.05",
-    tags: ["제주", "오름", "맛집"],
-    image: tripJeju,
-  },
-  {
-    number: "04",
-    title: "후쿠오카 겨울 여행",
-    date: "2024.12.24 — 2024.12.28",
-    tags: ["일본", "라멘", "온천"],
-    image: tripFukuoka,
-  },
+  { number: "01", title: "태안 바다 여행", date: "2022.07.15 — 2022.07.18", tags: ["바다", "캠핑", "일몰"], image: tripTaean },
+  { number: "02", title: "평택 주말 나들이", date: "2023.03.10 — 2023.03.12", tags: ["카페", "산책"], image: tripPyeongtaek },
+  { number: "03", title: "제주도 봄 여행", date: "2023.09.01 — 2023.09.05", tags: ["제주", "오름", "맛집"], image: tripJeju },
+  { number: "04", title: "후쿠오카 겨울 여행", date: "2024.12.24 — 2024.12.28", tags: ["일본", "라멘", "온천"], image: tripFukuoka },
 ];
 
-const stagger = { staggerChildren: 0.1 };
-const transition = { duration: 0.8, ease: [0.16, 1, 0.3, 1] };
+const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
+const transition: Transition = { duration: 0.8, ease };
+
+const containerVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
+};
 
 const TripsSection = () => {
   return (
@@ -59,16 +45,13 @@ const TripsSection = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={stagger}
+          variants={containerVariants}
           className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12"
         >
           {trips.map((trip) => (
             <motion.div
               key={trip.number}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition },
-              }}
+              variants={itemVariants}
               whileHover={{ y: -5 }}
               className="group cursor-pointer"
             >
@@ -85,12 +68,7 @@ const TripsSection = () => {
                 <p className="text-sm text-taupe mb-2">{trip.date}</p>
                 <div className="flex gap-2">
                   {trip.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] bg-secondary px-2 py-0.5 text-taupe"
-                    >
-                      {tag}
-                    </span>
+                    <span key={tag} className="text-[10px] bg-secondary px-2 py-0.5 text-taupe">{tag}</span>
                   ))}
                 </div>
               </div>

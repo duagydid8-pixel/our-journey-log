@@ -1,21 +1,25 @@
 import { motion, type Transition } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { getSettings, getTrips } from "@/lib/api";
 import aboutPortrait from "@/assets/about-portrait.jpg";
-
-const START_DATE = new Date("2021-05-20");
-const getDaysTogether = () =>
-  Math.floor((new Date().getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24));
-
-const stats = [
-  { value: getDaysTogether().toLocaleString(), label: "함께한 날" },
-  { value: "4", label: "여행 횟수" },
-  { value: "∞", label: "추억" },
-  { value: "♡", label: "사랑" },
-];
 
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const transition: Transition = { duration: 0.8, ease };
 
 const AboutSection = () => {
+  const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
+  const { data: trips = [] } = useQuery({ queryKey: ["trips"], queryFn: getTrips });
+
+  const startDate = new Date(settings?.start_date || "2021-05-20");
+  const daysTogether = Math.floor((new Date().getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+  const stats = [
+    { value: daysTogether.toLocaleString(), label: "함께한 날" },
+    { value: String(trips.length || 4), label: "여행 횟수" },
+    { value: "∞", label: "추억" },
+    { value: "♡", label: "사랑" },
+  ];
+
   return (
     <section id="about" className="bg-background py-20 md:py-28">
       <div className="max-w-6xl mx-auto px-6">

@@ -1,12 +1,9 @@
 import { motion, type Transition, type Variants } from "framer-motion";
-
-const notes = [
-  { sender: "H", content: "후쿠오카에서 먹은 라멘이 아직도 생각나. 다음에 또 가자.", date: "2025.01.15" },
-  { sender: "J", content: "태안 바다에서 본 석양이 가장 좋았어.", date: "2025.02.03" },
-  { sender: "H", content: "제주도 오름 위에서 바람 맞던 거 기억나? 머리가 다 날아갈 뻔했잖아.", date: "2025.03.10" },
-  { sender: "J", content: "다음 여행은 어디로 갈까. 오사카도 좋을 것 같아.", date: "2025.03.14" },
-  { sender: "H", content: "매일 같이 산책하는 것도 여행이지.", date: "2025.03.15" },
-];
+import { useQuery } from "@tanstack/react-query";
+import { getNotes, createNote } from "@/lib/api";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const transition: Transition = { duration: 0.8, ease };
@@ -22,6 +19,21 @@ const itemVariants: Variants = {
 };
 
 const NotesSection = () => {
+  const { data: notes = [] } = useQuery({ queryKey: ["notes"], queryFn: getNotes });
+  const qc = useQueryClient();
+  const [adding, setAdding] = useState(false);
+  const [sender, setSender] = useState("H");
+  const [content, setContent] = useState("");
+
+  const handleAdd = async () => {
+    if (!content.trim()) return;
+    await createNote({ sender, content });
+    qc.invalidateQueries({ queryKey: ["notes"] });
+    setContent("");
+    setAdding(false);
+    toast.success("메모가 추가되었습니다.");
+  };
+
   return (
     <section id="notes" className="bg-surface py-20 md:py-28">
       <div className="max-w-6xl mx-auto px-6">
@@ -45,9 +57,9 @@ const NotesSection = () => {
           variants={containerVariants}
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
-          {notes.map((note, i) => (
+          {notes.map((note) => (
             <motion.div
-              key={i}
+              key={note.id}
               variants={itemVariants}
               className="bg-bone/50 p-6 md:p-8 border-l-2 border-terracotta"
             >
@@ -55,18 +67,48 @@ const NotesSection = () => {
               <p className="text-[15px] leading-relaxed text-charcoal font-serif italic mb-4">
                 {note.content}
               </p>
-              <p className="text-[11px] text-taupe">{note.date}</p>
+              <p className="text-[11px] text-taupe">{new Date(note.created_at).toLocaleDateString("ko-KR")}</p>
             </motion.div>
           ))}
 
-          <motion.div
-            variants={itemVariants}
-            className="border-2 border-dashed border-border p-6 md:p-8 flex items-center justify-center cursor-pointer hover:border-terracotta transition-colors group"
-          >
-            <p className="text-[11px] tracking-[0.2em] uppercase text-taupe group-hover:text-terracotta transition-colors">
-              + 새로운 메모 추가
-            </p>
-          </motion.div>
+          {/* Add note */}
+          {adding ? (
+            <motion.div variants={itemVariants} className="bg-bone/50 p-6 md:p-8 border-l-2 border-terracotta">
+              <div className="flex gap-2 mb-3">
+                {["H", "J"].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSender(s)}
+                    className={`text-[10px] tracking-[0.3em] uppercase px-2 py-1 transition-colors ${sender === s ? "text-terracotta border-b border-terracotta" : "text-taupe"}`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full bg-transparent border-none text-[15px] leading-relaxed text-charcoal font-serif italic mb-4 resize-none focus:outline-none placeholder:text-taupe/50"
+                placeholder="메모를 작성하세요..."
+                rows={3}
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <button onClick={handleAdd} className="text-[11px] tracking-[0.2em] text-terracotta hover:underline">저장</button>
+                <button onClick={() => { setAdding(false); setContent(""); }} className="text-[11px] tracking-[0.2em] text-taupe hover:underline">취소</button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              variants={itemVariants}
+              onClick={() => setAdding(true)}
+              className="border-2 border-dashed border-border p-6 md:p-8 flex items-center justify-center cursor-pointer hover:border-terracotta transition-colors group"
+            >
+              <p className="text-[11px] tracking-[0.2em] uppercase text-taupe group-hover:text-terracotta transition-colors">
+                + 새로운 메모 추가
+              </p>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </section>

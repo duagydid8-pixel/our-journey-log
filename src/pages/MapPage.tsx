@@ -1,56 +1,295 @@
+import "leaflet/dist/leaflet.css";
+import { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getMapPins, createMapPin, deleteMapPin, type MapPin } from "@/lib/api";
 import SideNav from "@/components/SideNav";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { toast } from "sonner";
 
-const places = [
-  { name: "후쿠오카", country: "일본", emoji: "🇯🇵", memo: "2024년 봄, 첫 해외 여행" },
-  { name: "제주도", country: "한국", emoji: "🇰🇷", memo: "2023년 여름, 올레길 완주" },
-  { name: "태안", country: "한국", emoji: "🇰🇷", memo: "2023년 가을, 해변 드라이브" },
-  { name: "평택", country: "한국", emoji: "🇰🇷", memo: "2022년 겨울, 당일치기" },
-];
+// Fix leaflet default icon paths broken by bundlers
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
 
-const MapPage = () => (
-  <div className="min-h-screen bg-background">
-    <SideNav />
-    <Navbar />
-    <main className="pt-28 pb-20 px-6 max-w-3xl mx-auto">
-      <div className="text-center mb-16">
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(30 6% 53%)" }}>
-          Places We've Been
+// Custom terracotta pin icon
+const pinIcon = L.divIcon({
+  className: "",
+  iconSize: [28, 36],
+  iconAnchor: [14, 36],
+  popupAnchor: [0, -36],
+  html: `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14 0C6.268 0 0 6.268 0 14c0 9.334 14 22 14 22s14-12.666 14-22C28 6.268 21.732 0 14 0z" fill="#b87333"/>
+    <circle cx="14" cy="14" r="6" fill="#fff3e8"/>
+    <circle cx="14" cy="14" r="3" fill="#b87333"/>
+  </svg>`,
+});
+
+// ── Click handler to capture lat/lng ──
+const ClickHandler = ({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) => {
+  useMapEvents({
+    click(e) {
+      onMapClick(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+};
+
+// ── Add-pin modal ──
+const AddPinModal = ({
+  lat,
+  lng,
+  onSave,
+  onClose,
+}: {
+  lat: number;
+  lng: number;
+  onSave: (name: string, date: string, memo: string) => Promise<void>;
+  onClose: () => void;
+}) => {
+  const [name, setName] = useState("");
+  const [date, setDate] = useState("");
+  const [memo, setMemo] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    setSaving(true);
+    await onSave(name.trim(), date, memo.trim());
+    setSaving(false);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center"
+      style={{ background: "rgba(61,46,26,0.35)", backdropFilter: "blur(2px)" }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        className="w-full max-w-sm mx-4 border p-7 shadow-xl"
+        style={{ background: "hsl(36 33% 96%)", borderColor: "hsl(30 15% 88%)" }}
+      >
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: "hsl(30 6% 53%)" }}>
+          새 핀 추가
         </p>
-        <h1 className="font-serif text-4xl tracking-[0.1em]" style={{ color: "hsl(30 5% 16%)" }}>
-          지도
-        </h1>
-        <div className="mt-4 mx-auto w-12 h-px" style={{ background: "hsl(30 15% 88%)" }} />
+        <p className="text-[11px] mb-5" style={{ color: "hsl(30 6% 65%)" }}>
+          {lat.toFixed(4)}, {lng.toFixed(4)}
+        </p>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <div>
+            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(30 6% 53%)" }}>
+              여행지 이름 *
+            </label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="예: 교토, 제주도"
+              className="w-full border px-3 py-2 text-sm bg-transparent focus:outline-none"
+              style={{ borderColor: "hsl(30 15% 82%)", color: "hsl(30 5% 16%)" }}
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(30 6% 53%)" }}>
+              날짜
+            </label>
+            <input
+              type="text"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              placeholder="예: 2026.03"
+              className="w-full border px-3 py-2 text-sm bg-transparent focus:outline-none"
+              style={{ borderColor: "hsl(30 15% 82%)", color: "hsl(30 5% 16%)" }}
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(30 6% 53%)" }}>
+              메모
+            </label>
+            <textarea
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder="간단한 기록을 남겨보세요"
+              rows={2}
+              className="w-full border px-3 py-2 text-sm bg-transparent focus:outline-none resize-none"
+              style={{ borderColor: "hsl(30 15% 82%)", color: "hsl(30 5% 16%)" }}
+            />
+          </div>
+          <div className="flex gap-3 pt-1">
+            <button
+              type="submit"
+              disabled={saving || !name.trim()}
+              className="flex-1 py-2.5 text-[11px] tracking-[0.2em] uppercase transition-colors"
+              style={{
+                background: "hsl(30 5% 16%)",
+                color: "hsl(36 33% 96%)",
+                opacity: saving || !name.trim() ? 0.5 : 1,
+              }}
+            >
+              {saving ? "저장 중..." : "저장"}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 text-[11px] tracking-[0.2em] uppercase border transition-colors"
+              style={{ borderColor: "hsl(30 15% 82%)", color: "hsl(30 6% 53%)" }}
+            >
+              취소
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// ── Main MapPage ──
+const MapPage = () => {
+  const qc = useQueryClient();
+  const { data: pins = [], isLoading } = useQuery({ queryKey: ["map_pins"], queryFn: getMapPins });
+  const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null);
+
+  const handleMapClick = (lat: number, lng: number) => {
+    setPending({ lat, lng });
+  };
+
+  const handleSave = async (name: string, date: string, memo: string) => {
+    if (!pending) return;
+    await createMapPin({ name, date: date || undefined, memo: memo || undefined, lat: pending.lat, lng: pending.lng });
+    qc.invalidateQueries({ queryKey: ["map_pins"] });
+    toast.success(`"${name}" 핀이 추가되었습니다.`);
+    setPending(null);
+  };
+
+  const handleDelete = async (pin: MapPin) => {
+    if (!confirm(`"${pin.name}" 핀을 삭제하시겠습니까?`)) return;
+    await deleteMapPin(pin.id);
+    qc.invalidateQueries({ queryKey: ["map_pins"] });
+    toast.success("핀이 삭제되었습니다.");
+  };
+
+  return (
+    <div className="relative w-full h-screen overflow-hidden" style={{ background: "hsl(36 33% 96%)" }}>
+      <SideNav />
+
+      {/* Header */}
+      <div
+        className="absolute top-0 left-9 right-0 z-[500] flex items-center justify-between px-8 h-14 border-b"
+        style={{ background: "hsl(36 33% 96% / 0.92)", borderColor: "hsl(30 15% 88%)", backdropFilter: "blur(8px)" }}
+      >
+        <div className="flex items-center gap-3">
+          <span className="font-serif text-lg tracking-[0.2em]" style={{ color: "hsl(30 5% 16%)" }}>
+            지도
+          </span>
+          <span className="text-[10px] tracking-[0.2em] uppercase" style={{ color: "hsl(30 6% 60%)" }}>
+            {isLoading ? "..." : `${pins.length}개의 여행지`}
+          </span>
+        </div>
+        <p className="text-[10px] tracking-[0.18em]" style={{ color: "hsl(30 6% 65%)" }}>
+          지도를 클릭해 핀을 추가하세요
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {places.map((place, i) => (
-          <div
-            key={i}
-            className="border rounded-sm p-6"
-            style={{ background: "hsl(0 0% 100%)", borderColor: "hsl(30 15% 88%)" }}
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-2xl">{place.emoji}</span>
-              <div>
-                <p className="font-serif text-lg tracking-wide" style={{ color: "hsl(30 5% 16%)" }}>
-                  {place.name}
-                </p>
-                <p className="text-[10px] tracking-[0.2em] uppercase" style={{ color: "hsl(30 6% 53%)" }}>
-                  {place.country}
-                </p>
-              </div>
-            </div>
-            <p className="text-sm tracking-wide" style={{ color: "hsl(30 6% 53%)" }}>
-              {place.memo}
-            </p>
-          </div>
-        ))}
+      {/* Map */}
+      <div className="absolute inset-0 pt-14 pl-9">
+        <MapContainer
+          center={[30, 20]}
+          zoom={2.4}
+          minZoom={2}
+          style={{ width: "100%", height: "100%" }}
+          zoomControl={false}
+        >
+          {/* CartoDB Voyager — warm, muted tone */}
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            subdomains="abcd"
+          />
+
+          <ClickHandler onMapClick={handleMapClick} />
+
+          {pins.map((pin) => (
+            <Marker key={pin.id} position={[pin.lat, pin.lng]} icon={pinIcon}>
+              <Popup
+                className="journey-popup"
+                closeButton={false}
+                minWidth={200}
+                maxWidth={280}
+              >
+                <div style={{ fontFamily: "inherit", padding: "4px 2px" }}>
+                  <p
+                    className="font-serif"
+                    style={{ fontSize: 15, color: "hsl(30 5% 16%)", marginBottom: 4, letterSpacing: "0.05em" }}
+                  >
+                    {pin.name}
+                  </p>
+                  {pin.date && (
+                    <p style={{ fontSize: 11, color: "hsl(30 6% 55%)", marginBottom: 4, letterSpacing: "0.1em" }}>
+                      {pin.date}
+                    </p>
+                  )}
+                  {pin.memo && (
+                    <p
+                      className="font-serif italic"
+                      style={{ fontSize: 12, color: "hsl(30 5% 35%)", lineHeight: 1.55, marginBottom: 8 }}
+                    >
+                      {pin.memo}
+                    </p>
+                  )}
+                  <button
+                    onClick={() => handleDelete(pin)}
+                    style={{
+                      fontSize: 10,
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                      color: "hsl(0 60% 55%)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: 0,
+                    }}
+                  >
+                    핀 삭제
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
       </div>
-    </main>
-    <Footer />
-  </div>
-);
+
+      {/* Add-pin modal */}
+      {pending && (
+        <AddPinModal
+          lat={pending.lat}
+          lng={pending.lng}
+          onSave={handleSave}
+          onClose={() => setPending(null)}
+        />
+      )}
+
+      {/* Popup style override */}
+      <style>{`
+        .journey-popup .leaflet-popup-content-wrapper {
+          background: hsl(36 33% 96%);
+          border: 1px solid hsl(30 15% 86%);
+          border-radius: 2px;
+          box-shadow: 0 4px 20px rgba(61,46,26,0.12);
+          padding: 0;
+        }
+        .journey-popup .leaflet-popup-content {
+          margin: 14px 16px;
+        }
+        .journey-popup .leaflet-popup-tip-container {
+          display: none;
+        }
+      `}</style>
+    </div>
+  );
+};
 
 export default MapPage;

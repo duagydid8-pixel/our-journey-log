@@ -86,6 +86,34 @@ export const upsertSetting = async (key: string, value: string) => {
   if (error) throw error;
 };
 
+// ── Map Pins ──
+export type MapPin = {
+  id: string;
+  name: string;
+  date: string | null;
+  memo: string | null;
+  lat: number;
+  lng: number;
+  created_at: string;
+};
+
+export const getMapPins = async (): Promise<MapPin[]> => {
+  const { data, error } = await supabase.from("map_pins").select("*").order("created_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+};
+
+export const createMapPin = async (pin: { name: string; date?: string; memo?: string; lat: number; lng: number }): Promise<MapPin> => {
+  const { data, error } = await supabase.from("map_pins").insert(pin).select().single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteMapPin = async (id: string) => {
+  const { error } = await supabase.from("map_pins").delete().eq("id", id);
+  if (error) throw error;
+};
+
 export const uploadFile = async (file: File, folder = "uploads") => {
   const ext = file.name.split(".").pop();
   const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;

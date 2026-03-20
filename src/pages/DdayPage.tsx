@@ -3,7 +3,7 @@ import SideNav from "@/components/SideNav";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const START_DATE = new Date("2022-01-01"); // 기념일 날짜 — 필요시 수정
+const START_DATE = new Date("2026-03-01");
 
 const DdayPage = () => {
   const [days, setDays] = useState(0);

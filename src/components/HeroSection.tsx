@@ -8,7 +8,7 @@ const transition: Transition = { duration: 0.8, ease };
 const HeroSection = () => {
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
 
-  const startDate = new Date(settings?.start_date || "2021-05-20");
+  const startDate = new Date(settings?.start_date || "2026-03-01");
   const nextTripDate = new Date(settings?.next_trip_date || "2026-12-24");
   const nextTripName = settings?.next_trip_name || "후쿠오카";
 
@@ -67,7 +67,7 @@ const HeroSection = () => {
             <p className="text-3xl md:text-4xl font-light text-terracotta font-serif">
               D + {daysTogether.toLocaleString()}
             </p>
-            <p className="text-[11px] text-taupe mt-2">{settings?.start_date || "2021.05.20"} ~</p>
+            <p className="text-[11px] text-taupe mt-2">{settings?.start_date || "2026.03.01"} ~</p>
           </div>
           <div className="flex-1 bg-surface/80 backdrop-blur-sm border border-border p-6 md:p-8 text-center">
             <p className="text-[10px] tracking-[0.2em] uppercase text-taupe mb-2">다음 여행</p>

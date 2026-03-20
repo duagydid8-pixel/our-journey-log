@@ -10,7 +10,7 @@ const AboutSection = () => {
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const { data: trips = [] } = useQuery({ queryKey: ["trips"], queryFn: getTrips });
 
-  const startDate = new Date(settings?.start_date || "2021-05-20");
+  const startDate = new Date(settings?.start_date || "2026-03-01");
   const daysTogether = Math.floor((new Date().getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
   const stats = [

@@ -26,9 +26,13 @@ const pinIcon = new L.DivIcon({
   iconAnchor: [14, 36],
   popupAnchor: [0, -38],
   html: `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14 0C6.268 0 0 6.268 0 14c0 9.334 14 22 14 22s14-12.666 14-22C28 6.268 21.732 0 14 0z" fill="#b87333"/>
-    <circle cx="14" cy="14" r="6" fill="#fff3e8"/>
-    <circle cx="14" cy="14" r="3" fill="#b87333"/>
+    <path d="M14 0C6.268 0 0 6.268 0 14c0 9.334 14 22 14 22s14-12.666 14-22C28 6.268 21.732 0 14 0z" fill="#c04878"/>
+    <circle cx="14" cy="14" r="6" fill="#fde8f0"/>
+    <circle cx="14" cy="14" r="2.5" fill="#c04878"/>
+    <ellipse cx="14" cy="10" rx="2" ry="3.2" fill="#f5a0b5" opacity="0.7"/>
+    <ellipse cx="14" cy="18" rx="2" ry="3.2" fill="#f5a0b5" opacity="0.7"/>
+    <ellipse cx="10" cy="14" rx="3.2" ry="2" fill="#f5a0b5" opacity="0.7"/>
+    <ellipse cx="18" cy="14" rx="3.2" ry="2" fill="#f5a0b5" opacity="0.7"/>
   </svg>`,
 });
 
@@ -75,17 +79,17 @@ const AddPinModal = ({
     >
       <div
         className="w-full max-w-sm mx-4 border p-7 shadow-xl"
-        style={{ background: "hsl(36 33% 96%)", borderColor: "hsl(30 15% 88%)" }}
+        style={{ background: "#fdf0ea", borderColor: "#f0c8d4" }}
       >
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: "hsl(30 6% 53%)" }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: "#c4909a" }}>
           새 핀 추가
         </p>
-        <p className="text-[11px] mb-5" style={{ color: "hsl(30 6% 65%)" }}>
+        <p className="text-[11px] mb-5" style={{ color: "#d4a0b0" }}>
           {lat.toFixed(4)}, {lng.toFixed(4)}
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(30 6% 53%)" }}>
+            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "#c4909a" }}>
               여행지 이름 *
             </label>
             <input
@@ -93,12 +97,12 @@ const AddPinModal = ({
               onChange={(e) => setName(e.target.value)}
               placeholder="예: 교토, 제주도"
               className="w-full border px-3 py-2 text-sm bg-transparent focus:outline-none"
-              style={{ borderColor: "hsl(30 15% 82%)", color: "hsl(30 5% 16%)" }}
+              style={{ borderColor: "#f0c8d4", color: "#4a2030" }}
               autoFocus
             />
           </div>
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(30 6% 53%)" }}>
+            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "#c4909a" }}>
               날짜
             </label>
             <input
@@ -107,11 +111,11 @@ const AddPinModal = ({
               onChange={(e) => setDate(e.target.value)}
               placeholder="예: 2026.03"
               className="w-full border px-3 py-2 text-sm bg-transparent focus:outline-none"
-              style={{ borderColor: "hsl(30 15% 82%)", color: "hsl(30 5% 16%)" }}
+              style={{ borderColor: "#f0c8d4", color: "#4a2030" }}
             />
           </div>
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(30 6% 53%)" }}>
+            <label className="block text-[10px] tracking-[0.2em] uppercase mb-1.5" style={{ color: "#c4909a" }}>
               메모
             </label>
             <textarea
@@ -120,7 +124,7 @@ const AddPinModal = ({
               placeholder="간단한 기록을 남겨보세요"
               rows={2}
               className="w-full border px-3 py-2 text-sm bg-transparent focus:outline-none resize-none"
-              style={{ borderColor: "hsl(30 15% 82%)", color: "hsl(30 5% 16%)" }}
+              style={{ borderColor: "#f0c8d4", color: "#4a2030" }}
             />
           </div>
           <div className="flex gap-3 pt-1">
@@ -129,8 +133,8 @@ const AddPinModal = ({
               disabled={saving || !name.trim()}
               className="flex-1 py-2.5 text-[11px] tracking-[0.2em] uppercase transition-colors"
               style={{
-                background: "hsl(30 5% 16%)",
-                color: "hsl(36 33% 96%)",
+                background: "#c04878",
+                color: "#fdf0ea",
                 opacity: saving || !name.trim() ? 0.5 : 1,
               }}
             >
@@ -140,7 +144,7 @@ const AddPinModal = ({
               type="button"
               onClick={onClose}
               className="flex-1 py-2.5 text-[11px] tracking-[0.2em] uppercase border transition-colors"
-              style={{ borderColor: "hsl(30 15% 82%)", color: "hsl(30 6% 53%)" }}
+              style={{ borderColor: "#f0c8d4", color: "#c4909a" }}
             >
               취소
             </button>
@@ -179,27 +183,36 @@ const MapPage = () => {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden" style={{ background: "hsl(36 33% 96%)" }}>
+    <div className="relative w-full h-screen overflow-hidden" style={{ background: "#fdf0ea" }}>
       <SideNav />
 
       {/* Header */}
       <div
         className="absolute top-0 left-9 right-0 z-[500] flex items-center justify-between px-8 h-14 border-b"
         style={{
-          background: "hsl(36 33% 96% / 0.95)",
-          borderColor: "hsl(30 15% 88%)",
+          background: "rgba(253,240,234,0.96)",
+          borderColor: "#f0c8d4",
           backdropFilter: "blur(8px)",
         }}
       >
         <div className="flex items-center gap-3">
-          <span className="font-serif text-lg tracking-[0.2em]" style={{ color: "hsl(30 5% 16%)" }}>
+          {/* Small flower accent */}
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            {[0,60,120,180,240,300].map(a => (
+              <ellipse key={a} cx="8" cy="4.5" rx="2" ry="3.5"
+                fill="#f5a0b5" opacity="0.85"
+                transform={`rotate(${a} 8 8)`} />
+            ))}
+            <circle cx="8" cy="8" r="2.8" fill="#fde8d8" />
+          </svg>
+          <span className="font-serif text-lg tracking-[0.2em]" style={{ color: "#4a2030" }}>
             지도
           </span>
-          <span className="text-[10px] tracking-[0.2em] uppercase" style={{ color: "hsl(30 6% 60%)" }}>
+          <span className="text-[10px] tracking-[0.2em] uppercase" style={{ color: "#c4909a" }}>
             {isLoading ? "..." : `${pins.length}개의 여행지`}
           </span>
         </div>
-        <p className="text-[10px] tracking-[0.18em]" style={{ color: "hsl(30 6% 65%)" }}>
+        <p className="text-[10px] tracking-[0.18em]" style={{ color: "#c4909a" }}>
           지도를 클릭해 핀을 추가하세요
         </p>
       </div>
@@ -228,12 +241,12 @@ const MapPage = () => {
                 <div style={{ padding: "4px 2px" }}>
                   <p
                     className="font-serif"
-                    style={{ fontSize: 15, color: "hsl(30 5% 16%)", marginBottom: 4, letterSpacing: "0.05em" }}
+                    style={{ fontSize: 15, color: "#4a2030", marginBottom: 4, letterSpacing: "0.05em" }}
                   >
                     {pin.name}
                   </p>
                   {pin.date && (
-                    <p style={{ fontSize: 11, color: "hsl(30 6% 55%)", marginBottom: 4, letterSpacing: "0.1em" }}>
+                    <p style={{ fontSize: 11, color: "#c4909a", marginBottom: 4, letterSpacing: "0.1em" }}>
                       {pin.date}
                     </p>
                   )}
@@ -280,8 +293,8 @@ const MapPage = () => {
       {/* Popup style overrides */}
       <style>{`
         .journey-popup .leaflet-popup-content-wrapper {
-          background: hsl(36 33% 96%);
-          border: 1px solid hsl(30 15% 86%);
+          background: #fdf0ea;
+          border: 1px solid #f0c8d4;
           border-radius: 2px;
           box-shadow: 0 4px 20px rgba(61,46,26,0.12);
           padding: 0;

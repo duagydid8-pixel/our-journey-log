@@ -1,6 +1,5 @@
 import SideNav from "@/components/SideNav";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { FloralBanner, FloralDivider } from "@/components/FloralHeader";
 
 const bucketItems = [
   { label: "제주도 한 달 살기", done: false },
@@ -11,59 +10,73 @@ const bucketItems = [
   { label: "유럽 배낭여행", done: false },
 ];
 
-const BucketListPage = () => (
-  <div className="min-h-screen bg-background">
-    <SideNav />
-    <Navbar />
-    <main className="pt-28 pb-20 px-6 max-w-2xl mx-auto">
-      <div className="text-center mb-16">
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(30 6% 53%)" }}>
-          Together
-        </p>
-        <h1 className="font-serif text-4xl tracking-[0.1em]" style={{ color: "hsl(30 5% 16%)" }}>
-          버킷리스트
-        </h1>
-        <div className="mt-4 mx-auto w-12 h-px" style={{ background: "hsl(30 15% 88%)" }} />
-      </div>
+// Small floral check icon
+const FloralCheck = ({ done }: { done: boolean }) => (
+  <svg width="22" height="22" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+    {done ? (
+      <>
+        {[0,60,120,180,240,300].map(a => (
+          <ellipse key={a} cx="11" cy="7" rx="2.5" ry="4.5"
+            fill="#e8a0c0" opacity="0.9"
+            transform={`rotate(${a} 11 11)`} />
+        ))}
+        <circle cx="11" cy="11" r="4" fill="#fde8d8" />
+        <path d="M8 11l2 2 4-4" stroke="#c04878" strokeWidth="1.5"
+          strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      </>
+    ) : (
+      <>
+        <circle cx="11" cy="11" r="8" fill="none" stroke="#f0c0d0" strokeWidth="1.5" />
+        <circle cx="11" cy="11" r="2.5" fill="#f5d0da" />
+      </>
+    )}
+  </svg>
+);
 
-      <ul className="flex flex-col gap-3">
-        {bucketItems.map((item, i) => (
-          <li
-            key={i}
-            className="flex items-center gap-4 border px-6 py-4 rounded-sm"
-            style={{
-              background: item.done ? "hsl(20 40% 50% / 0.05)" : "hsl(0 0% 100%)",
-              borderColor: item.done ? "hsl(20 40% 50% / 0.3)" : "hsl(30 15% 88%)",
-            }}
-          >
-            <span
-              className="text-base"
-              style={{ color: item.done ? "hsl(20 40% 50%)" : "hsl(30 15% 80%)" }}
-            >
-              {item.done ? "✦" : "☆"}
-            </span>
-            <span
-              className="font-serif text-[15px] tracking-wide flex-1"
+const BucketListPage = () => (
+  <div className="min-h-screen" style={{ background: "#fdf0ea" }}>
+    <SideNav />
+    <div className="pl-9">
+      <FloralBanner title="버킷리스트" subtitle="Together" />
+      <main className="pb-20 px-6 max-w-2xl mx-auto">
+        <FloralDivider />
+        <ul className="flex flex-col gap-3">
+          {bucketItems.map((item, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-4 px-6 py-4 transition-all"
               style={{
-                color: item.done ? "hsl(30 6% 53%)" : "hsl(30 5% 16%)",
-                textDecoration: item.done ? "line-through" : "none",
+                background: item.done
+                  ? "rgba(232,160,192,0.08)"
+                  : "rgba(255,248,245,0.9)",
+                border: `1px solid ${item.done ? "#f0c0d0" : "#f5d5dc"}`,
+                borderRadius: 4,
+                boxShadow: "0 2px 12px rgba(232,160,192,0.08)",
               }}
             >
-              {item.label}
-            </span>
-            {item.done && (
+              <FloralCheck done={item.done} />
               <span
-                className="text-[10px] tracking-[0.2em] uppercase"
-                style={{ color: "hsl(20 40% 50%)" }}
+                className="font-serif text-[15px] tracking-wide flex-1"
+                style={{
+                  color: item.done ? "#c4909a" : "#4a2030",
+                  textDecoration: item.done ? "line-through" : "none",
+                }}
               >
-                Done
+                {item.label}
               </span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </main>
-    <Footer />
+              {item.done && (
+                <span
+                  className="text-[10px] tracking-[0.2em] uppercase font-serif italic"
+                  style={{ color: "#c04878" }}
+                >
+                  Done ♡
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </main>
+    </div>
   </div>
 );
 

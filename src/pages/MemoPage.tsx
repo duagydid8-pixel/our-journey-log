@@ -1,16 +1,14 @@
 import SideNav from "@/components/SideNav";
-import Navbar from "@/components/Navbar";
+import { FloralBanner } from "@/components/FloralHeader";
 import NotesSection from "@/components/NotesSection";
-import Footer from "@/components/Footer";
 
 const MemoPage = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen" style={{ background: "#fdf0ea" }}>
     <SideNav />
-    <Navbar />
-    <div className="pt-14">
+    <div className="pl-9">
+      <FloralBanner title="메모" subtitle="Our Notes" />
       <NotesSection />
     </div>
-    <Footer />
   </div>
 );
 

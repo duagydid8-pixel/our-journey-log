@@ -6,43 +6,43 @@
 
 @layer base {
   :root {
-    --background: 36 33% 96%;
-    --foreground: 30 5% 16%;
+    --background: 15 75% 97%;
+    --foreground: 345 28% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 30 5% 16%;
+    --card: 15 60% 99%;
+    --card-foreground: 345 28% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 30 5% 16%;
+    --popover: 15 60% 99%;
+    --popover-foreground: 345 28% 20%;
 
-    --primary: 20 40% 50%;
-    --primary-foreground: 36 33% 96%;
+    --primary: 340 55% 62%;
+    --primary-foreground: 15 75% 97%;
 
-    --secondary: 30 10% 94%;
-    --secondary-foreground: 30 5% 16%;
+    --secondary: 15 40% 94%;
+    --secondary-foreground: 345 28% 20%;
 
-    --muted: 30 6% 53%;
-    --muted-foreground: 30 6% 53%;
+    --muted: 345 18% 58%;
+    --muted-foreground: 345 18% 58%;
 
-    --accent: 20 40% 50%;
-    --accent-foreground: 36 33% 96%;
+    --accent: 340 55% 62%;
+    --accent-foreground: 15 75% 97%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 30 15% 88%;
-    --input: 30 15% 88%;
-    --ring: 20 40% 50%;
+    --border: 345 40% 88%;
+    --input: 345 40% 88%;
+    --ring: 340 55% 62%;
 
     --radius: 2px;
 
     /* Custom tokens */
-    --surface: 0 0% 100%;
-    --bone: 36 33% 96%;
-    --terracotta: 20 40% 50%;
-    --charcoal: 30 5% 16%;
-    --taupe: 30 6% 53%;
-    --hero-bg: 33 30% 92%;
+    --surface: 15 60% 99%;
+    --bone: 15 75% 97%;
+    --terracotta: 340 55% 62%;
+    --charcoal: 345 28% 20%;
+    --taupe: 345 18% 58%;
+    --hero-bg: 15 60% 94%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;

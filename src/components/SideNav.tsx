@@ -25,10 +25,10 @@ const SideNav = () => {
       transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
       className="fixed left-0 top-0 h-full z-50 overflow-hidden"
       style={{
-        background: "hsl(36 33% 96% / 0.96)",
-        borderRight: "1px solid hsl(30 15% 88%)",
+        background: "hsl(15 75% 97% / 0.96)",
+        borderRight: "1px solid hsl(345 40% 88%)",
         backdropFilter: "blur(10px)",
-        boxShadow: open ? "4px 0 28px hsl(30 10% 60% / 0.14)" : "2px 0 8px hsl(30 10% 60% / 0.06)",
+        boxShadow: open ? "4px 0 28px hsl(340 30% 60% / 0.14)" : "2px 0 8px hsl(340 30% 60% / 0.06)",
       }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
@@ -44,7 +44,7 @@ const SideNav = () => {
           <motion.div
             animate={{ rotate: open ? 180 : 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            style={{ color: "hsl(20 40% 50%)", lineHeight: 1 }}
+            style={{ color: "hsl(340 55% 62%)", lineHeight: 1 }}
           >
             {/* Chevron arrow */}
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -65,7 +65,7 @@ const SideNav = () => {
           style={{
             width: 16,
             height: 1,
-            background: "hsl(30 15% 88%)",
+            background: "hsl(345 40% 88%)",
             marginBottom: 8,
           }}
         />
@@ -84,7 +84,7 @@ const SideNav = () => {
                   minWidth: COLLAPSED_W - 12,
                   paddingLeft: 6,
                   paddingRight: 6,
-                  background: isActive ? "hsl(20 40% 50% / 0.1)" : "transparent",
+                  background: isActive ? "hsl(340 55% 62% / 0.1)" : "transparent",
                 }}
                 onClick={() => setOpen(false)}
               >
@@ -93,7 +93,7 @@ const SideNav = () => {
                   className="shrink-0 flex items-center justify-center text-[12px]"
                   style={{
                     width: 22,
-                    color: isActive ? "hsl(20 40% 50%)" : "hsl(30 6% 58%)",
+                    color: isActive ? "hsl(340 55% 62%)" : "hsl(345 18% 58%)",
                   }}
                 >
                   {item.icon}
@@ -105,7 +105,7 @@ const SideNav = () => {
                   transition={{ duration: 0.22, ease: "easeOut" }}
                   className="font-serif text-[13px] tracking-[0.15em] whitespace-nowrap ml-2"
                   style={{
-                    color: isActive ? "hsl(20 40% 50%)" : "hsl(30 5% 28%)",
+                    color: isActive ? "hsl(340 55% 62%)" : "hsl(345 18% 28%)",
                     fontWeight: isActive ? 500 : 400,
                   }}
                 >
@@ -117,7 +117,7 @@ const SideNav = () => {
                   <motion.div
                     layoutId="active-dot"
                     className="ml-auto w-1 h-1 rounded-full shrink-0"
-                    style={{ background: "hsl(20 40% 50%)" }}
+                    style={{ background: "hsl(340 55% 62%)" }}
                     transition={{ duration: 0.2 }}
                   />
                 )}
@@ -134,17 +134,17 @@ const SideNav = () => {
           >
             <div
               className="h-px w-8 mb-4"
-              style={{ background: "hsl(30 15% 88%)" }}
+              style={{ background: "hsl(345 40% 88%)" }}
             />
             <p
               className="font-serif text-lg tracking-[0.3em]"
-              style={{ color: "hsl(30 5% 16%)" }}
+              style={{ color: "hsl(345 28% 20%)" }}
             >
               H &amp; J
             </p>
             <p
               className="mt-0.5 text-[9px] tracking-[0.25em] uppercase"
-              style={{ color: "hsl(30 6% 60%)" }}
+              style={{ color: "hsl(345 18% 60%)" }}
             >
               Our Journey
             </p>

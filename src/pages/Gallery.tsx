@@ -1,16 +1,14 @@
 import SideNav from "@/components/SideNav";
-import Navbar from "@/components/Navbar";
+import { FloralBanner } from "@/components/FloralHeader";
 import GallerySection from "@/components/GallerySection";
-import Footer from "@/components/Footer";
 
 const Gallery = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen" style={{ background: "#fdf0ea" }}>
     <SideNav />
-    <Navbar />
-    <div className="pt-14">
+    <div className="pl-9">
+      <FloralBanner title="갤러리" subtitle="Our Gallery" />
       <GallerySection />
     </div>
-    <Footer />
   </div>
 );
 

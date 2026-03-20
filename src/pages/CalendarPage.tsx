@@ -1,37 +1,43 @@
 import SideNav from "@/components/SideNav";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { FloralBanner, FloralDivider } from "@/components/FloralHeader";
 
 const CalendarPage = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen" style={{ background: "#fdf0ea" }}>
     <SideNav />
-    <Navbar />
-    <main className="pt-28 pb-20 px-6 max-w-4xl mx-auto">
-      <div className="text-center mb-16">
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(30 6% 53%)" }}>
-          Our Calendar
-        </p>
-        <h1 className="font-serif text-4xl tracking-[0.1em]" style={{ color: "hsl(30 5% 16%)" }}>
-          캘린더
-        </h1>
-        <div className="mt-4 mx-auto w-12 h-px" style={{ background: "hsl(30 15% 88%)" }} />
-      </div>
-      <div
-        className="rounded-sm border p-12 text-center"
-        style={{
-          background: "hsl(0 0% 100%)",
-          borderColor: "hsl(30 15% 88%)",
-        }}
-      >
-        <p className="font-serif text-xl tracking-wide" style={{ color: "hsl(30 6% 53%)" }}>
-          준비 중입니다
-        </p>
-        <p className="mt-2 text-sm tracking-wider" style={{ color: "hsl(30 6% 70%)" }}>
-          곧 우리의 특별한 날들을 기록할 수 있어요
-        </p>
-      </div>
-    </main>
-    <Footer />
+    <div className="pl-9">
+      <FloralBanner title="캘린더" subtitle="Our Calendar" />
+      <main className="pb-20 px-6 max-w-3xl mx-auto">
+        <FloralDivider />
+        <div
+          className="rounded-sm p-12 text-center"
+          style={{
+            background: "rgba(255,248,245,0.9)",
+            border: "1px solid #f0c8d4",
+            boxShadow: "0 4px 24px rgba(232,160,192,0.1)",
+          }}
+        >
+          {/* Mini flower decoration */}
+          <svg width="60" height="30" viewBox="0 0 60 30" className="mx-auto mb-6">
+            {[10,30,50].map((x,i) => (
+              <g key={i} transform={`translate(${x},15)`}>
+                {[0,60,120,180,240,300].map(a => (
+                  <ellipse key={a} cx="0" cy="-5" rx="2.2" ry="4.2"
+                    fill={i===1?"#e8a0c0":"#f9c4d4"} opacity="0.85"
+                    transform={`rotate(${a} 0 0)`} />
+                ))}
+                <circle cx="0" cy="0" r="2.5" fill="#fde8d8" />
+              </g>
+            ))}
+          </svg>
+          <p className="font-serif text-xl tracking-wide mb-2" style={{ color: "#9a5870" }}>
+            준비 중입니다
+          </p>
+          <p className="text-sm tracking-wider" style={{ color: "#c4909a" }}>
+            곧 우리의 특별한 날들을 기록할 수 있어요
+          </p>
+        </div>
+      </main>
+    </div>
   </div>
 );
 

@@ -1,5 +1,5 @@
 import "leaflet/dist/leaflet.css";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -7,20 +7,24 @@ import { getMapPins, createMapPin, deleteMapPin, type MapPin } from "@/lib/api";
 import SideNav from "@/components/SideNav";
 import { toast } from "sonner";
 
-// Fix leaflet default icon paths broken by bundlers
+// Fix Leaflet default icon paths broken by Vite bundler
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 });
 
-// Custom terracotta pin icon
-const pinIcon = L.divIcon({
+// Custom terracotta SVG pin icon
+const pinIcon = new L.DivIcon({
   className: "",
   iconSize: [28, 36],
   iconAnchor: [14, 36],
-  popupAnchor: [0, -36],
+  popupAnchor: [0, -38],
   html: `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M14 0C6.268 0 0 6.268 0 14c0 9.334 14 22 14 22s14-12.666 14-22C28 6.268 21.732 0 14 0z" fill="#b87333"/>
     <circle cx="14" cy="14" r="6" fill="#fff3e8"/>
@@ -28,7 +32,7 @@ const pinIcon = L.divIcon({
   </svg>`,
 });
 
-// ── Click handler to capture lat/lng ──
+// ── Map click handler (must be inside MapContainer) ──
 const ClickHandler = ({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) => {
   useMapEvents({
     click(e) {
@@ -153,13 +157,15 @@ const MapPage = () => {
   const { data: pins = [], isLoading } = useQuery({ queryKey: ["map_pins"], queryFn: getMapPins });
   const [pending, setPending] = useState<{ lat: number; lng: number } | null>(null);
 
-  const handleMapClick = (lat: number, lng: number) => {
-    setPending({ lat, lng });
-  };
-
   const handleSave = async (name: string, date: string, memo: string) => {
     if (!pending) return;
-    await createMapPin({ name, date: date || undefined, memo: memo || undefined, lat: pending.lat, lng: pending.lng });
+    await createMapPin({
+      name,
+      date: date || undefined,
+      memo: memo || undefined,
+      lat: pending.lat,
+      lng: pending.lng,
+    });
     qc.invalidateQueries({ queryKey: ["map_pins"] });
     toast.success(`"${name}" 핀이 추가되었습니다.`);
     setPending(null);
@@ -179,7 +185,11 @@ const MapPage = () => {
       {/* Header */}
       <div
         className="absolute top-0 left-9 right-0 z-[500] flex items-center justify-between px-8 h-14 border-b"
-        style={{ background: "hsl(36 33% 96% / 0.92)", borderColor: "hsl(30 15% 88%)", backdropFilter: "blur(8px)" }}
+        style={{
+          background: "hsl(36 33% 96% / 0.95)",
+          borderColor: "hsl(30 15% 88%)",
+          backdropFilter: "blur(8px)",
+        }}
       >
         <div className="flex items-center gap-3">
           <span className="font-serif text-lg tracking-[0.2em]" style={{ color: "hsl(30 5% 16%)" }}>
@@ -194,33 +204,28 @@ const MapPage = () => {
         </p>
       </div>
 
-      {/* Map */}
+      {/* Map — starts below header, right of sidebar */}
       <div className="absolute inset-0 pt-14 pl-9">
         <MapContainer
           center={[30, 20]}
-          zoom={2.4}
+          zoom={2}
           minZoom={2}
+          scrollWheelZoom={true}
           style={{ width: "100%", height: "100%" }}
-          zoomControl={false}
+          zoomControl={true}
         >
-          {/* CartoDB Voyager — warm, muted tone */}
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-            subdomains="abcd"
+            subdomains={["a", "b", "c", "d"]}
           />
 
-          <ClickHandler onMapClick={handleMapClick} />
+          <ClickHandler onMapClick={(lat, lng) => setPending({ lat, lng })} />
 
           {pins.map((pin) => (
             <Marker key={pin.id} position={[pin.lat, pin.lng]} icon={pinIcon}>
-              <Popup
-                className="journey-popup"
-                closeButton={false}
-                minWidth={200}
-                maxWidth={280}
-              >
-                <div style={{ fontFamily: "inherit", padding: "4px 2px" }}>
+              <Popup className="journey-popup" closeButton={false} minWidth={200} maxWidth={280}>
+                <div style={{ padding: "4px 2px" }}>
                   <p
                     className="font-serif"
                     style={{ fontSize: 15, color: "hsl(30 5% 16%)", marginBottom: 4, letterSpacing: "0.05em" }}
@@ -272,7 +277,7 @@ const MapPage = () => {
         />
       )}
 
-      {/* Popup style override */}
+      {/* Popup style overrides */}
       <style>{`
         .journey-popup .leaflet-popup-content-wrapper {
           background: hsl(36 33% 96%);

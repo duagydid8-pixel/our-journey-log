@@ -43,7 +43,15 @@ const TripsSection = () => {
         </motion.div>
 
         {trips.length === 0 ? (
-          <p className="text-taupe text-sm">아직 기록된 여행이 없습니다.</p>
+          <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-border rounded-sm">
+            <p className="text-taupe text-sm tracking-wide mb-6">아직 기록된 여행이 없습니다</p>
+            <a
+              href="/admin"
+              className="text-[11px] tracking-[0.25em] uppercase px-6 py-3 border border-charcoal text-charcoal hover:bg-charcoal hover:text-background transition-colors"
+            >
+              + 새 여행 추가
+            </a>
+          </div>
         ) : (
           <motion.div
             initial="hidden"

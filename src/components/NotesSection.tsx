@@ -50,6 +50,10 @@ const NotesSection = () => {
           </h2>
         </motion.div>
 
+        {notes.length === 0 && !adding && (
+          <p className="text-taupe text-sm tracking-wide mb-4">아직 작성된 메모가 없습니다</p>
+        )}
+
         <motion.div
           initial="hidden"
           whileInView="visible"

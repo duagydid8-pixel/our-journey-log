@@ -101,16 +101,16 @@ const SettingsTab = () => {
 
   useEffect(() => {
     if (settings) {
-      setStartDate(settings.start_date || "");
+      setStartDate(settings.start_date || "2026-03-01");
       setNextDate(settings.next_trip_date || "");
       setNextName(settings.next_trip_name || "");
     }
   }, [settings]);
 
   const save = async () => {
-    await api.updateSetting("start_date", startDate);
-    await api.updateSetting("next_trip_date", nextDate);
-    await api.updateSetting("next_trip_name", nextName);
+    await api.upsertSetting("start_date", startDate || "2026-03-01");
+    await api.upsertSetting("next_trip_date", nextDate);
+    await api.upsertSetting("next_trip_name", nextName);
     qc.invalidateQueries({ queryKey: ["settings"] });
     toast.success("설정이 저장되었습니다.");
   };
@@ -196,7 +196,22 @@ const TripsTab = () => {
         </div>
       </div>
 
-      <h3 className="text-sm tracking-[0.2em] uppercase text-taupe mb-4">등록된 여행</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm tracking-[0.2em] uppercase text-taupe">등록된 여행</h3>
+        {trips.length > 0 && (
+          <button
+            onClick={async () => {
+              if (!confirm("모든 여행을 삭제하시겠습니까?")) return;
+              await api.deleteAllTrips();
+              qc.invalidateQueries({ queryKey: ["trips"] });
+              toast.success("전체 삭제되었습니다.");
+            }}
+            className="text-[11px] tracking-[0.15em] text-red-400 hover:text-red-600 border border-red-300 hover:border-red-500 px-3 py-1 transition-colors"
+          >
+            전체 삭제
+          </button>
+        )}
+      </div>
       {isLoading ? <p className="text-taupe text-sm">로딩 중...</p> : (
         <div className="space-y-3">
           {trips.map((trip) => (
@@ -327,7 +342,22 @@ const NotesTab = () => {
         <button onClick={handleAdd} className="admin-btn mt-4">추가</button>
       </div>
 
-      <h3 className="text-sm tracking-[0.2em] uppercase text-taupe mb-4">등록된 메모</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm tracking-[0.2em] uppercase text-taupe">등록된 메모</h3>
+        {notes.length > 0 && (
+          <button
+            onClick={async () => {
+              if (!confirm("모든 메모를 삭제하시겠습니까?")) return;
+              await api.deleteAllNotes();
+              qc.invalidateQueries({ queryKey: ["notes"] });
+              toast.success("전체 삭제되었습니다.");
+            }}
+            className="text-[11px] tracking-[0.15em] text-red-400 hover:text-red-600 border border-red-300 hover:border-red-500 px-3 py-1 transition-colors"
+          >
+            전체 삭제
+          </button>
+        )}
+      </div>
       {isLoading ? <p className="text-taupe text-sm">로딩 중...</p> : (
         <div className="space-y-3">
           {notes.map((note) => (

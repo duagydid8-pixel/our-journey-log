@@ -71,6 +71,21 @@ export const deleteNote = async (id: string) => {
   if (error) throw error;
 };
 
+export const deleteAllTrips = async () => {
+  const { error } = await supabase.from("trips").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+  if (error) throw error;
+};
+
+export const deleteAllNotes = async () => {
+  const { error } = await supabase.from("notes").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+  if (error) throw error;
+};
+
+export const upsertSetting = async (key: string, value: string) => {
+  const { error } = await supabase.from("settings").upsert({ key, value }, { onConflict: "key" });
+  if (error) throw error;
+};
+
 export const uploadFile = async (file: File, folder = "uploads") => {
   const ext = file.name.split(".").pop();
   const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;

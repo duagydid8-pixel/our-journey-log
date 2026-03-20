@@ -10,8 +10,8 @@ const AboutSection = () => {
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
   const { data: trips = [] } = useQuery({ queryKey: ["trips"], queryFn: getTrips });
 
-  const startDate = new Date(settings?.start_date || "2026-03-01");
-  const daysTogether = Math.floor((new Date().getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  const START_DATE = new Date("2026-03-01");
+  const daysTogether = Math.floor((new Date().getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24));
 
   const stats = [
     { value: daysTogether.toLocaleString(), label: "함께한 날" },

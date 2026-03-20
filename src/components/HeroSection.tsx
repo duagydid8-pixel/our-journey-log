@@ -5,15 +5,16 @@ import { getSettings } from "@/lib/api";
 const ease: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const transition: Transition = { duration: 0.8, ease };
 
+const START_DATE = new Date("2026-03-01");
+
 const HeroSection = () => {
   const { data: settings } = useQuery({ queryKey: ["settings"], queryFn: getSettings });
 
-  const startDate = new Date(settings?.start_date || "2026-03-01");
+  const now = new Date();
+  const daysTogether = Math.floor((now.getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24));
+
   const nextTripDate = new Date(settings?.next_trip_date || "2026-12-24");
   const nextTripName = settings?.next_trip_name || "후쿠오카";
-
-  const now = new Date();
-  const daysTogether = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   const daysUntil = Math.floor((nextTripDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
   return (
@@ -67,7 +68,7 @@ const HeroSection = () => {
             <p className="text-3xl md:text-4xl font-light text-terracotta font-serif">
               D + {daysTogether.toLocaleString()}
             </p>
-            <p className="text-[11px] text-taupe mt-2">{settings?.start_date || "2026.03.01"} ~</p>
+            <p className="text-[11px] text-taupe mt-2">2026.03.01 ~</p>
           </div>
           <div className="flex-1 bg-surface/80 backdrop-blur-sm border border-border p-6 md:p-8 text-center">
             <p className="text-[10px] tracking-[0.2em] uppercase text-taupe mb-2">다음 여행</p>

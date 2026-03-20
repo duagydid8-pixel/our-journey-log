@@ -1,272 +1,259 @@
 import { motion } from "framer-motion";
 
 const START_DATE = new Date("2026-03-01");
-
 const daysTogether = Math.floor(
   (new Date().getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24)
 );
 
-const HeroSection = () => {
+/* ── individual flower / leaf helpers ── */
+
+// Red poppy
+const Poppy = ({ x, y, r = 0 }: { x: number; y: number; r?: number }) => (
+  <g transform={`translate(${x},${y}) rotate(${r})`}>
+    <ellipse cx="0" cy="-13" rx="9" ry="14" fill="#e03030" opacity="0.92" transform="rotate(0 0 0)" />
+    <ellipse cx="0" cy="-13" rx="9" ry="14" fill="#d02020" opacity="0.85" transform="rotate(90 0 0)" />
+    <ellipse cx="0" cy="-13" rx="9" ry="14" fill="#e84040" opacity="0.8"  transform="rotate(45 0 0)" />
+    <ellipse cx="0" cy="-13" rx="9" ry="14" fill="#cc2020" opacity="0.8"  transform="rotate(135 0 0)" />
+    <circle cx="0" cy="0" r="5" fill="#1a1a2e" />
+    <circle cx="-1" cy="-1" r="2" fill="#2a2a4e" opacity="0.7" />
+  </g>
+);
+
+// Purple/lavender flower
+const PurpleFlower = ({ x, y, r = 0, size = 1 }: { x: number; y: number; r?: number; size?: number }) => (
+  <g transform={`translate(${x},${y}) rotate(${r}) scale(${size})`}>
+    {[0, 40, 80, 120, 160, 200, 240, 280, 320].map((a) => (
+      <ellipse key={a} cx="0" cy="-11" rx="5" ry="10"
+        fill="#9b59b6" opacity="0.88"
+        transform={`rotate(${a} 0 0)`} />
+    ))}
+    <circle cx="0" cy="0" r="4.5" fill="#f9e4ff" />
+    <circle cx="0" cy="0" r="2" fill="#c678dd" opacity="0.7" />
+  </g>
+);
+
+// Orange rose
+const OrangeRose = ({ x, y, r = 0 }: { x: number; y: number; r?: number }) => (
+  <g transform={`translate(${x},${y}) rotate(${r})`}>
+    <circle cx="0" cy="0" r="15" fill="#e8732a" opacity="0.9" />
+    <circle cx="0" cy="0" r="11" fill="#f0883a" opacity="0.85" />
+    <circle cx="0" cy="0" r="8"  fill="#f89c4a" opacity="0.9" />
+    <circle cx="0" cy="0" r="5"  fill="#fdb060" opacity="0.95" />
+    <circle cx="0" cy="0" r="2.5" fill="#ffc870" />
+    {/* Petal edges */}
+    {[0, 60, 120, 180, 240, 300].map(a => (
+      <ellipse key={a} cx="0" cy="-13" rx="5" ry="8"
+        fill="#e8732a" opacity="0.6"
+        transform={`rotate(${a} 0 0)`} />
+    ))}
+  </g>
+);
+
+// Blue flower
+const BlueFlower = ({ x, y, r = 0, size = 1 }: { x: number; y: number; r?: number; size?: number }) => (
+  <g transform={`translate(${x},${y}) rotate(${r}) scale(${size})`}>
+    {[0, 51, 102, 153, 204, 255, 306].map((a) => (
+      <ellipse key={a} cx="0" cy="-10" rx="5.5" ry="10"
+        fill="#3a7bd5" opacity="0.88"
+        transform={`rotate(${a} 0 0)`} />
+    ))}
+    <circle cx="0" cy="0" r="4" fill="#fff8e8" />
+    <circle cx="0" cy="0" r="1.8" fill="#5a9be0" opacity="0.7" />
+  </g>
+);
+
+// Leaf
+const Leaf = ({ x, y, r = 0, size = 1, color = "#4a9e4a" }: {
+  x: number; y: number; r?: number; size?: number; color?: string
+}) => (
+  <g transform={`translate(${x},${y}) rotate(${r}) scale(${size})`}>
+    <ellipse cx="0" cy="-14" rx="7" ry="16" fill={color} opacity="0.85" />
+    <line x1="0" y1="0" x2="0" y2="-26" stroke={color} strokeWidth="1" opacity="0.5" />
+    {[-3, 3].map((dx, i) => (
+      <line key={i} x1="0" y1="-8" x2={dx * 3} y2="-14"
+        stroke={color} strokeWidth="0.8" opacity="0.4" />
+    ))}
+  </g>
+);
+
+/* ── The full floral circle illustration ── */
+const FloralCircle = () => {
+  const R = 210; // circle radius
+
   return (
-    <div
-      className="relative w-full min-h-screen overflow-hidden flex flex-col items-center justify-center"
-      style={{
-        background: "linear-gradient(180deg, #b8dff5 0%, #d6eef8 30%, #e8f4f0 60%, #f0ede0 100%)",
-      }}
+    <svg
+      width={R * 2 + 80}
+      height={R * 2 + 80}
+      viewBox={`${-R - 40} ${-R - 40} ${(R + 40) * 2} ${(R + 40) * 2}`}
+      xmlns="http://www.w3.org/2000/svg"
     >
-      {/* ── Sky layer ── */}
+      {/* Soft drop shadow circle */}
+      <circle cx="0" cy="0" r={R + 6} fill="rgba(0,0,0,0.08)" />
 
-      {/* Sun glow */}
-      <div
-        className="absolute"
-        style={{
-          top: "8%",
-          right: "18%",
-          width: 90,
-          height: 90,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, #fff5c0 0%, #fde68a88 50%, transparent 75%)",
-          filter: "blur(6px)",
-        }}
-      />
+      {/* Main circle fill */}
+      <circle cx="0" cy="0" r={R}
+        fill="rgba(255,255,255,0.18)" />
 
-      {/* Clouds */}
-      <Cloud x="8%" y="12%" scale={1.2} delay={0} />
-      <Cloud x="55%" y="7%" scale={0.85} delay={1.5} />
-      <Cloud x="72%" y="18%" scale={1} delay={3} />
-      <Cloud x="30%" y="20%" scale={0.65} delay={0.8} />
+      {/* Circle stroke */}
+      <circle cx="0" cy="0" r={R}
+        fill="none"
+        stroke="rgba(255,255,255,0.75)"
+        strokeWidth="3" />
 
-      {/* Birds */}
-      <Birds x="62%" y="14%" delay={0} />
-      <Birds x="22%" y="10%" delay={2} />
+      {/* Inner circle stroke */}
+      <circle cx="0" cy="0" r={R - 14}
+        fill="none"
+        stroke="rgba(255,255,255,0.35)"
+        strokeWidth="1" />
 
-      {/* ── Hill / Ground layer ── */}
-      <svg
-        className="absolute bottom-0 left-0 w-full"
-        viewBox="0 0 1440 340"
-        preserveAspectRatio="none"
-        xmlns="http://www.w3.org/2000/svg"
+      {/* ── Flowers arranged around the circle ring ── */}
+
+      {/* Top */}
+      <PurpleFlower x={0}    y={-R + 2}  size={1.1} />
+      <Poppy        x={-38}  y={-R + 14} />
+      <Poppy        x={38}   y={-R + 14} />
+      <BlueFlower   x={-72}  y={-R + 36} size={0.9} />
+      <BlueFlower   x={72}   y={-R + 36} size={0.9} />
+      <OrangeRose   x={-108} y={-R + 68} />
+      <OrangeRose   x={108}  y={-R + 68} />
+      <PurpleFlower x={-148} y={-R + 110} size={0.85} />
+      <PurpleFlower x={148}  y={-R + 110} size={0.85} />
+
+      {/* Left side */}
+      <Poppy        x={-R + 18} y={0}    r={90} />
+      <BlueFlower   x={-R + 38} y={-55}  size={0.9} r={20} />
+      <BlueFlower   x={-R + 38} y={55}   size={0.9} r={-20} />
+
+      {/* Right side */}
+      <Poppy        x={R - 18}  y={0}    r={-90} />
+      <BlueFlower   x={R - 38}  y={-55}  size={0.9} r={-20} />
+      <BlueFlower   x={R - 38}  y={55}   size={0.9} r={20} />
+
+      {/* Bottom */}
+      <OrangeRose   x={0}    y={R - 18} />
+      <Poppy        x={-42}  y={R - 28} r={15} />
+      <Poppy        x={42}   y={R - 28} r={-15} />
+      <PurpleFlower x={-80}  y={R - 52} size={0.9} />
+      <PurpleFlower x={80}   y={R - 52} size={0.9} />
+      <BlueFlower   x={-118} y={R - 88} size={0.85} />
+      <BlueFlower   x={118}  y={R - 88} size={0.85} />
+
+      {/* Leaves filling gaps */}
+      <Leaf x={-20}  y={-R + 8}   r={0}    size={0.9} color="#3a8a3a" />
+      <Leaf x={20}   y={-R + 8}   r={0}    size={0.9} color="#3a8a3a" />
+      <Leaf x={-58}  y={-R + 26}  r={-25}  size={0.85} color="#4aaa4a" />
+      <Leaf x={58}   y={-R + 26}  r={25}   size={0.85} color="#4aaa4a" />
+      <Leaf x={-92}  y={-R + 56}  r={-45}  size={0.8} color="#3a9a3a" />
+      <Leaf x={92}   y={-R + 56}  r={45}   size={0.8} color="#3a9a3a" />
+      <Leaf x={-130} y={-R + 96}  r={-60}  color="#5aba5a" />
+      <Leaf x={130}  y={-R + 96}  r={60}   color="#5aba5a" />
+      <Leaf x={-168} y={-R + 148} r={-80}  size={0.9} color="#3a8a3a" />
+      <Leaf x={168}  y={-R + 148} r={80}   size={0.9} color="#3a8a3a" />
+
+      <Leaf x={-20}  y={R - 10}   r={180}  size={0.9} color="#3a8a3a" />
+      <Leaf x={20}   y={R - 10}   r={180}  size={0.9} color="#3a8a3a" />
+      <Leaf x={-62}  y={R - 34}   r={160}  size={0.85} color="#4aaa4a" />
+      <Leaf x={62}   y={R - 34}   r={200}  size={0.85} color="#4aaa4a" />
+      <Leaf x={-100} y={R - 68}   r={140}  size={0.8} color="#5aba5a" />
+      <Leaf x={100}  y={R - 68}   r={220}  size={0.8} color="#5aba5a" />
+
+      {/* ── Center text ── */}
+      <text
+        x="0" y="-18"
+        textAnchor="middle"
+        fontFamily="'Cormorant Garamond', Georgia, serif"
+        fontSize="52"
+        fontStyle="italic"
+        fontWeight="500"
+        fill="white"
+        style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.25))" }}
       >
-        {/* Back hill */}
-        <ellipse cx="900" cy="420" rx="700" ry="260" fill="#b8d8a0" opacity="0.55" />
-        {/* Mid hill */}
-        <path
-          d="M0,220 Q200,100 440,160 Q680,220 900,140 Q1100,70 1440,180 L1440,340 L0,340 Z"
-          fill="#8fbe6e"
-          opacity="0.75"
-        />
-        {/* Front ground */}
-        <path
-          d="M0,280 Q300,240 600,265 Q900,290 1200,255 Q1340,240 1440,260 L1440,340 L0,340 Z"
-          fill="#6aaa44"
-        />
-      </svg>
-
-      {/* Grass blades */}
-      <GrassRow />
-
-      {/* Tiny flower dots */}
-      <Flowers />
-
-      {/* ── Tree silhouettes ── */}
-      <TreeLeft />
-      <TreeRight />
-
-      {/* ── Center content ── */}
-      <div className="relative z-10 flex flex-col items-center select-none" style={{ marginTop: "-60px" }}>
-        {/* Script title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="font-serif italic text-center leading-tight"
-          style={{
-            fontSize: "clamp(2.8rem, 7vw, 5.5rem)",
-            color: "#3d2e1a",
-            letterSpacing: "0.06em",
-            textShadow: "0 2px 12px rgba(255,255,240,0.6)",
-          }}
-        >
-          H &amp; J
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            fontSize: "0.72rem",
-            letterSpacing: "0.32em",
-            color: "#6b5a3e",
-            textTransform: "uppercase",
-            marginTop: "0.5rem",
-          }}
-        >
-          우리의 여행 기록
-        </motion.p>
-
-        {/* D+day pill */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            marginTop: "2rem",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "0.25rem",
-          }}
-        >
-          <div
-            style={{
-              background: "rgba(255,252,240,0.72)",
-              border: "1px solid rgba(180,155,100,0.35)",
-              borderRadius: "999px",
-              padding: "0.45rem 1.6rem",
-              backdropFilter: "blur(6px)",
-              boxShadow: "0 2px 16px rgba(100,80,40,0.08)",
-            }}
-          >
-            <span
-              className="font-serif"
-              style={{ fontSize: "1.5rem", color: "#b87333", letterSpacing: "0.04em", fontWeight: 400 }}
-            >
-              D + {daysTogether}
-            </span>
-          </div>
-          <span style={{ fontSize: "0.65rem", color: "#8a7456", letterSpacing: "0.22em", textTransform: "uppercase" }}>
-            2026.03.01 ~
-          </span>
-        </motion.div>
-      </div>
-
-      {/* Soft bottom fade */}
-      <div
-        className="absolute bottom-0 left-0 w-full h-16 pointer-events-none"
-        style={{ background: "linear-gradient(to top, rgba(106,170,68,0.18), transparent)" }}
-      />
-    </div>
+        YU &amp; YEOM
+      </text>
+      <text
+        x="0" y="18"
+        textAnchor="middle"
+        fontFamily="'Cormorant Garamond', Georgia, serif"
+        fontSize="12"
+        fill="rgba(255,255,255,0.8)"
+        letterSpacing="6"
+      >
+        OUR JOURNEY
+      </text>
+    </svg>
   );
 };
 
-/* ── Sub-components ── */
-
-const Cloud = ({ x, y, scale, delay }: { x: string; y: string; scale: number; delay: number }) => (
-  <motion.div
-    className="absolute pointer-events-none"
-    style={{ left: x, top: y }}
-    animate={{ x: [0, 14, 0] }}
-    transition={{ duration: 9 + delay * 2, repeat: Infinity, ease: "easeInOut", delay }}
+/* ── Main component ── */
+const HeroSection = () => (
+  <div
+    className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden select-none"
+    style={{ background: "#F2B5A0" }}
   >
-    <svg
-      width={120 * scale}
-      height={54 * scale}
-      viewBox="0 0 120 54"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+    {/* Subtle radial glow behind circle */}
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        width: 560,
+        height: 560,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(255,255,255,0.22) 0%, transparent 70%)",
+      }}
+    />
+
+    {/* Floral circle */}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.88 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+      className="relative z-10"
     >
-      <ellipse cx="60" cy="38" rx="54" ry="16" fill="white" opacity="0.82" />
-      <ellipse cx="45" cy="30" rx="26" ry="20" fill="white" opacity="0.88" />
-      <ellipse cx="72" cy="28" rx="22" ry="18" fill="white" opacity="0.85" />
-      <ellipse cx="55" cy="24" rx="18" ry="16" fill="white" opacity="0.9" />
-    </svg>
-  </motion.div>
-);
+      <FloralCircle />
+    </motion.div>
 
-const Birds = ({ x, y, delay }: { x: string; y: string; delay: number }) => (
-  <motion.div
-    className="absolute pointer-events-none"
-    style={{ left: x, top: y }}
-    animate={{ x: [0, 20, 0], y: [0, -5, 0] }}
-    transition={{ duration: 7 + delay, repeat: Infinity, ease: "easeInOut", delay }}
-  >
-    <svg width="52" height="20" viewBox="0 0 52 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 10 Q8 4 14 10" stroke="#5a7a5a" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-      <path d="M20 8 Q26 2 32 8" stroke="#5a7a5a" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-      <path d="M38 11 Q44 5 50 11" stroke="#5a7a5a" strokeWidth="1.2" strokeLinecap="round" fill="none" />
-    </svg>
-  </motion.div>
-);
-
-const GrassRow = () => (
-  <svg
-    className="absolute pointer-events-none"
-    style={{ bottom: 52, left: 0, width: "100%", height: 60 }}
-    viewBox="0 0 1440 60"
-    preserveAspectRatio="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {Array.from({ length: 72 }).map((_, i) => {
-      const x = i * 20 + 4;
-      const h = 14 + ((i * 7) % 12);
-      const lean = (i % 3 === 0 ? -3 : i % 3 === 1 ? 3 : 0);
-      return (
-        <line
-          key={i}
-          x1={x} y1={60}
-          x2={x + lean} y2={60 - h}
-          stroke="#4e8c2a"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          opacity={0.55 + (i % 4) * 0.1}
-        />
-      );
-    })}
-  </svg>
-);
-
-const Flowers = () => (
-  <svg
-    className="absolute pointer-events-none"
-    style={{ bottom: 55, left: 0, width: "100%", height: 30 }}
-    viewBox="0 0 1440 30"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {[60, 160, 300, 480, 620, 780, 950, 1100, 1280, 1380].map((x, i) => (
-      <g key={i} transform={`translate(${x},${18 - (i % 3) * 3})`}>
-        <circle cx="0" cy="0" r="3.5" fill={i % 2 === 0 ? "#f9d0d0" : "#fde68a"} opacity="0.9" />
-        <circle cx="0" cy="-5" r="2" fill={i % 2 === 0 ? "#f9d0d0" : "#fde68a"} opacity="0.7" />
-        <circle cx="4" cy="2" r="2" fill={i % 2 === 0 ? "#f9d0d0" : "#fde68a"} opacity="0.7" />
-        <circle cx="-4" cy="2" r="2" fill={i % 2 === 0 ? "#f9d0d0" : "#fde68a"} opacity="0.7" />
-      </g>
-    ))}
-  </svg>
-);
-
-const TreeLeft = () => (
-  <svg
-    className="absolute pointer-events-none"
-    style={{ bottom: 60, left: "2%", width: 110, height: 200 }}
-    viewBox="0 0 110 200"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* Trunk */}
-    <rect x="46" y="130" width="18" height="70" rx="4" fill="#7c5c3a" />
-    {/* Canopy layers */}
-    <ellipse cx="55" cy="120" rx="48" ry="36" fill="#4a7c2f" opacity="0.9" />
-    <ellipse cx="55" cy="98" rx="38" ry="30" fill="#5a9436" opacity="0.95" />
-    <ellipse cx="55" cy="78" rx="28" ry="24" fill="#6aaa44" />
-    <ellipse cx="55" cy="62" rx="18" ry="18" fill="#78be4e" />
-    {/* Highlight */}
-    <ellipse cx="44" cy="68" rx="8" ry="6" fill="#a0d46a" opacity="0.4" />
-  </svg>
-);
-
-const TreeRight = () => (
-  <svg
-    className="absolute pointer-events-none"
-    style={{ bottom: 60, right: "4%", width: 90, height: 170 }}
-    viewBox="0 0 90 170"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <rect x="37" y="110" width="16" height="60" rx="4" fill="#7c5c3a" />
-    <ellipse cx="45" cy="100" rx="38" ry="30" fill="#4a7c2f" opacity="0.88" />
-    <ellipse cx="45" cy="82" rx="30" ry="25" fill="#5a9436" opacity="0.95" />
-    <ellipse cx="45" cy="65" rx="22" ry="20" fill="#6aaa44" />
-    <ellipse cx="45" cy="50" rx="14" ry="15" fill="#78be4e" />
-    <ellipse cx="36" cy="56" rx="6" ry="5" fill="#a0d46a" opacity="0.4" />
-  </svg>
+    {/* D+day badge below circle */}
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="relative z-10 flex flex-col items-center"
+      style={{ marginTop: "1.2rem" }}
+    >
+      <div
+        style={{
+          background: "rgba(255,255,255,0.32)",
+          border: "1px solid rgba(255,255,255,0.55)",
+          borderRadius: 999,
+          padding: "0.4rem 1.8rem",
+          backdropFilter: "blur(6px)",
+        }}
+      >
+        <span
+          className="font-serif"
+          style={{
+            fontSize: "1.4rem",
+            color: "#fff",
+            letterSpacing: "0.05em",
+            fontWeight: 400,
+            textShadow: "0 1px 6px rgba(0,0,0,0.18)",
+          }}
+        >
+          D + {daysTogether}
+        </span>
+      </div>
+      <span
+        style={{
+          marginTop: "0.4rem",
+          fontSize: "0.62rem",
+          letterSpacing: "0.28em",
+          textTransform: "uppercase",
+          color: "rgba(255,255,255,0.75)",
+        }}
+      >
+        2026.03.01 ~
+      </span>
+    </motion.div>
+  </div>
 );
 
 export default HeroSection;

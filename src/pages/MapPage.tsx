@@ -1,6 +1,6 @@
 import "leaflet/dist/leaflet.css";
-import { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import { useState, useRef, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMapPins, createMapPin, deleteMapPin, type MapPin } from "@/lib/api";
@@ -35,6 +35,104 @@ const pinIcon = new L.DivIcon({
     <ellipse cx="18" cy="14" rx="3.2" ry="2" fill="#f5a0b5" opacity="0.7"/>
   </svg>`,
 });
+
+// ── Search result type ──
+type SearchResult = { display_name: string; lat: string; lon: string };
+
+// ── Search box (must be inside MapContainer to use useMap) ──
+const SearchBox = () => {
+  const map = useMap();
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const search = async () => {
+    if (!query.trim()) return;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&countrycodes=kr&format=json&limit=6&accept-language=ko`
+      );
+      const data: SearchResult[] = await res.json();
+      setResults(data);
+      setOpen(true);
+    } catch {
+      toast.error("검색에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelect = (r: SearchResult) => {
+    map.flyTo([parseFloat(r.lat), parseFloat(r.lon)], 12, { duration: 1.2 });
+    setOpen(false);
+    setQuery(r.display_name.split(",")[0]);
+    setResults([]);
+  };
+
+  return (
+    <div
+      ref={wrapperRef}
+      className="absolute top-3 right-4 z-[600]"
+      style={{ width: 260 }}
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      <div className="flex border shadow-md" style={{ background: "#fdf0ea", borderColor: "#f0c8d4" }}>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && search()}
+          placeholder="지역 검색 (예: 제주, 강남구)"
+          className="flex-1 px-3 py-2 text-[12px] bg-transparent focus:outline-none"
+          style={{ color: "#4a2030" }}
+        />
+        <button
+          onClick={search}
+          className="px-3 py-2 text-[11px] transition-colors"
+          style={{ background: "#c04878", color: "#fdf0ea", minWidth: 36 }}
+        >
+          {loading ? "…" : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="6" cy="6" r="4.5" stroke="#fdf0ea" strokeWidth="1.5"/>
+              <path d="M9.5 9.5L13 13" stroke="#fdf0ea" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          )}
+        </button>
+      </div>
+      {open && results.length > 0 && (
+        <ul className="border shadow-lg max-h-52 overflow-y-auto" style={{ background: "#fdf0ea", borderColor: "#f0c8d4" }}>
+          {results.map((r, i) => (
+            <li
+              key={i}
+              onClick={() => handleSelect(r)}
+              className="px-3 py-2 text-[12px] cursor-pointer hover:bg-[#fce8f0] border-b last:border-b-0"
+              style={{ color: "#4a2030", borderColor: "#f0c8d4" }}
+            >
+              {r.display_name}
+            </li>
+          ))}
+        </ul>
+      )}
+      {open && results.length === 0 && !loading && (
+        <div className="border px-3 py-2 text-[12px]" style={{ background: "#fdf0ea", borderColor: "#f0c8d4", color: "#c4909a" }}>
+          검색 결과가 없습니다.
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ── Map click handler (must be inside MapContainer) ──
 const ClickHandler = ({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) => {
@@ -235,6 +333,7 @@ const MapPage = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
+          <SearchBox />
           <ClickHandler onMapClick={(lat, lng) => setPending({ lat, lng })} />
 
           {pins.map((pin) => (

@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      map_pins: {
+        Row: {
+          id: string
+          name: string
+          date: string | null
+          memo: string | null
+          lat: number
+          lng: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          date?: string | null
+          memo?: string | null
+          lat: number
+          lng: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          date?: string | null
+          memo?: string | null
+          lat?: number
+          lng?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           content: string

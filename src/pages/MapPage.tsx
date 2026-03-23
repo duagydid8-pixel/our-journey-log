@@ -261,16 +261,21 @@ const MapPage = () => {
 
   const handleSave = async (name: string, date: string, memo: string) => {
     if (!pending) return;
-    await createMapPin({
-      name,
-      date: date || undefined,
-      memo: memo || undefined,
-      lat: pending.lat,
-      lng: pending.lng,
-    });
-    qc.invalidateQueries({ queryKey: ["map_pins"] });
-    toast.success(`"${name}" 핀이 추가되었습니다.`);
-    setPending(null);
+    try {
+      await createMapPin({
+        name,
+        date: date || undefined,
+        memo: memo || undefined,
+        lat: pending.lat,
+        lng: pending.lng,
+      });
+      qc.invalidateQueries({ queryKey: ["map_pins"] });
+      toast.success(`"${name}" 핀이 추가되었습니다.`);
+      setPending(null);
+    } catch (err) {
+      console.error("핀 저장 오류:", err);
+      toast.error("핀 저장에 실패했습니다. Supabase 연결을 확인해 주세요.");
+    }
   };
 
   const handleDelete = async (pin: MapPin) => {

@@ -220,9 +220,12 @@ const MapPage = () => {
       {/* Map — starts below header, right of sidebar */}
       <div className="absolute inset-0 pt-14 pl-9">
         <MapContainer
-          center={[30, 20]}
-          zoom={2}
-          minZoom={2}
+          center={[36.5, 127.8]}
+          zoom={7}
+          minZoom={6}
+          maxZoom={13}
+          maxBounds={[[33.0, 124.0], [38.9, 132.0]]}
+          maxBoundsViscosity={1.0}
           scrollWheelZoom={true}
           style={{ width: "100%", height: "100%" }}
           zoomControl={true}

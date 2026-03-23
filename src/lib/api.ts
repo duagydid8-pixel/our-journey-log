@@ -43,10 +43,21 @@ export const getPhotos = async (galleryOnly = false) => {
   return data ?? [];
 };
 
-export const createPhoto = async (photo: { url: string; caption?: string; trip_id?: string; is_gallery?: boolean; sort_order?: number }) => {
+export type Photo = {
+  id: string;
+  url: string;
+  caption: string | null;
+  date: string | null;
+  memo: string | null;
+  is_gallery: boolean;
+  sort_order: number;
+  created_at: string;
+};
+
+export const createPhoto = async (photo: { url: string; caption?: string; date?: string; memo?: string; trip_id?: string; is_gallery?: boolean; sort_order?: number }) => {
   const { data, error } = await supabase.from("photos").insert(photo).select().single();
   if (error) throw error;
-  return data;
+  return data as Photo;
 };
 
 export const deletePhoto = async (id: string) => {
